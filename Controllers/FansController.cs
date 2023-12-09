@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Assignment2.Data;
 using Assignment2.Models;
+using Assignment2.Models.ViewModels;
 
 namespace Assignment2.Controllers
 {
@@ -20,9 +21,27 @@ namespace Assignment2.Controllers
         }
 
         // GET: Fans
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? id)
         {
-              return View(await _context.Fans.ToListAsync());
+            var viewModel = new SportClubViewModel()
+            {
+                Fans = await _context.Fans
+                  .Include(i => i.Subscriptions)
+                  .AsNoTracking()
+                  .OrderBy(i => i.LastName)
+                  .ToListAsync()
+            };
+
+            if (id != null)
+            {
+                viewModel.Subscriptions = viewModel.Fans.Where(
+                    i => i.Id == id).Single().Subscriptions;
+                List<string> ids = viewModel.Subscriptions.Select(i => i.SportClubId).ToList();
+                viewModel.SportClubs = await _context.SportClubs.Where(
+                    z => ids.Contains(z.Id)).ToListAsync();
+            }
+
+            return View(viewModel);
         }
 
         // GET: Fans/Details/5
