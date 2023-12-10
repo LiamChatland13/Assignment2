@@ -135,6 +135,51 @@ namespace Assignment2.Controllers
 
 
 
+        // POST: Fans/AddSubscriptions
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddSubscriptions(int fanId, string sportClubId)
+        {
+            var existingSubscription = await _context.Subscriptions
+                .FirstOrDefaultAsync(s => s.FanId == fanId && s.SportClubId == sportClubId);
+
+            if (existingSubscription != null)
+            {
+                return RedirectToAction(nameof(EditSubscriptions), new { id = fanId });
+            }
+            else
+            {
+                var newSubscription = new Subscription
+                {
+                    FanId = fanId,
+                    SportClubId = sportClubId,
+                };
+
+                _context.Subscriptions.Add(newSubscription);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(EditSubscriptions), new { id = fanId });
+            }
+        }
+
+
+        // POST: Fans/RemoveSubscriptions
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveSubscriptions(int fanId, string sportClubId)
+        {
+            var subscriptionToRemove = await _context.Subscriptions
+                .FirstOrDefaultAsync(s => s.FanId == fanId && s.SportClubId == sportClubId);
+
+            if (subscriptionToRemove != null)
+            {
+                _context.Subscriptions.Remove(subscriptionToRemove);
+                await _context.SaveChangesAsync();
+            }
+            else{}
+
+            return RedirectToAction(nameof(EditSubscriptions), new { id = fanId });
+        }
 
 
 

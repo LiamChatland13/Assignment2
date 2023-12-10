@@ -6,7 +6,7 @@
 
 <h2>Edit Subscriptions for @Model.Fan.FirstName @Model.Fan.LastName</h2>
 
-<form asp-action="SaveSubscriptions" method="post">
+<form asp-action="AddSubscriptions" method="post">
     @foreach (var subscription in Model.Subscriptions)
     {
         <div>
