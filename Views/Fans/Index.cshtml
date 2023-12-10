@@ -57,6 +57,11 @@
                 @if (Model.SportClubs.Count() > 0)
                 {
                     <th> SportClub </th>
+                    @if (Model.Subscriptions.FirstOrDefault() is not null)
+                    {
+                        <th><a asp-action="EditSubscriptions" asp-route-id="@Model.Subscriptions.FirstOrDefault().FanId">Edit</a></th>
+                    }
+
                 }
                 else
                 {

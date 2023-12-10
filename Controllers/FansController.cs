@@ -84,6 +84,60 @@ namespace Assignment2.Controllers
             return View(fan);
         }
 
+
+
+        //GET: Fans/EditSubscriptions/5
+        public async Task<IActionResult> EditSubscriptions(int? id)
+        {
+            if (id == null || _context.Fans == null)
+            {
+                return NotFound();
+            }
+
+            var fan = await _context.Fans
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (fan == null)
+            {
+                return NotFound();
+            }
+
+            var subscriptions = await _context.Subscriptions
+            .Include(s => s.SportClub)
+            .Where(s => s.FanId == id)
+            .ToListAsync();
+
+            var sportClubSubscriptions = subscriptions.Select(s => new SportClubSubscriptionViewModel
+            {
+                SportClubId = s.SportClub.Id,
+                Title = s.SportClub.Title,
+                IsMember = true 
+            }).ToList();
+
+            var allSportClubs = await _context.SportClubs.ToListAsync();
+
+            var notSubscribedSportClubs = allSportClubs.Where(sc => !sportClubSubscriptions.Any(ss => ss.SportClubId == sc.Id));
+
+            sportClubSubscriptions.AddRange(notSubscribedSportClubs.Select(sc => new SportClubSubscriptionViewModel
+            {
+                SportClubId = sc.Id,
+                Title = sc.Title,
+                IsMember = false 
+            }));
+
+            var viewModel = new FanSubscriptionViewModel()
+            {
+                Fan = fan,
+                Subscriptions = sportClubSubscriptions
+            };
+
+            return View(viewModel);
+        }
+
+
+
+
+
+
         // GET: Fans/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {

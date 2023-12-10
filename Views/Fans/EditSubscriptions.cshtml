@@ -1,0 +1,24 @@
+﻿@model Assignment2.Models.ViewModels.FanSubscriptionViewModel
+
+@{
+    ViewData["Title"] = "EditSubscriptions";
+}
+
+<h2>Edit Subscriptions for @Model.Fan.FirstName @Model.Fan.LastName</h2>
+
+<form asp-action="SaveSubscriptions" method="post">
+    @foreach (var subscription in Model.Subscriptions)
+    {
+        <div>
+            <input type="checkbox" asp-for="@subscription.IsMember" />
+            <label>@subscription.Title</label>
+            <input type="hidden" asp-for="@subscription.SportClubId" />
+        </div>
+    }
+    <button type="submit">Save Changes</button>
+</form>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }
